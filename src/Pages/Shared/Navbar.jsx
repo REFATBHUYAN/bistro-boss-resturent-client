@@ -1,34 +1,57 @@
+import { useContext } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../../Provider/AuthProvider";
+import { FaShoppingCart } from 'react-icons/fa';
+import useCart from "../../Hooks/useCart";
+import useAdmin from "../../Hooks/useAdmin";
+
 const Navbar = () => {
+  const { user, logout } = useContext(AuthContext);
+  const [cart] = useCart();
+  const [isAdmin] = useAdmin();
+  const handleLogOut = () => {
+    logout()
+      .then(() => {})
+      .catch((error) => console.log(error));
+  };
   const navOptions = (
     <>
       <li>
-        <a>Item 1</a>
-      </li>
-      <li tabIndex={0}>
-        <a className="justify-between">
-          Parent
-          <svg
-            className="fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-          >
-            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
-          </svg>
-        </a>
-        <ul className="p-2">
-          <li>
-            <a>Submenu 1</a>
-          </li>
-          <li>
-            <a>Submenu 2</a>
-          </li>
-        </ul>
+        <Link to={"/"}>Home</Link>
       </li>
       <li>
-        <a>Item 3</a>
+        <Link to={"/menu"}>Our Menu</Link>
       </li>
+      <li>
+        <Link to={"/order/Salad"}>Order</Link>
+      </li>
+      <li>
+        <Link to={isAdmin ? '/dashboard/adminhome' : '/dashboard/userhome'}>Dashboard</Link>
+      </li>
+      <li>
+        <Link to={"/dashboard/mycart"}>
+          <button className="btn gap-2">
+            <FaShoppingCart></FaShoppingCart>
+            <div className="badge badge-secondary">{cart.length || 0}</div>
+          </button>
+        </Link>
+      </li>
+
+      {user ? (
+        <>
+          <li>
+            <button onClick={handleLogOut} className="btn btn-ghost">
+              Logout
+            </button>
+          </li>
+        </>
+      ) : (
+        <>
+          <li>
+            <Link to={"/login"}>Login</Link>
+          </li>
+        </>
+      )}
     </>
   );
   return (
@@ -61,9 +84,7 @@ const Navbar = () => {
         <a className="btn btn-ghost normal-case text-xl">Bistro Boss</a>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          {navOptions}
-        </ul>
+        <ul className="menu menu-horizontal px-1">{navOptions}</ul>
       </div>
       <div className="navbar-end">
         <a className="btn">Get started</a>
